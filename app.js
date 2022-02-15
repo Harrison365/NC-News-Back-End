@@ -1,17 +1,18 @@
 const express = require("express");
-// const /*{ controllers here } */ = require(/* controllers file path here*/);
+const { getTopics } = require("./controllers.js");
 
 const app = express();
-app.use(express.json());
 
-/*
+app.use(express.json()); //<<< Not sure why?
 
-app.get
+app.get("/api/topics", getTopics);
 
-app.post 
+// app.post
 
-etc...
+// etc...
 
-*/
+app.all("*", (req, res) => {
+  res.status(404).send({ message: "path not found" });
+});
 
 module.exports = app;
