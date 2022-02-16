@@ -14,6 +14,5 @@ exports.fetchArticleById = (article_id) => {
     });
 };
 
-//Write models and controllers
-//Write tests for additional errors
-//Do additional error stuff.
+//TO DO:
+//SAD Path

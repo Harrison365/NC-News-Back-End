@@ -53,16 +53,25 @@ describe("/api/articles/:article_id", () => {
           });
         });
     });
+    test("status 400 - invalid article id", () => {
+      return request(app)
+        .get("/api/articles/banana") //<<< 999 would give 404 as it COULD exist as it is a number
+        .expect(400) //<<< for impossible input like banana
+        .then(({ body }) => {
+          expect(body.msg).toBe("invalid request");
+        });
+    });
   });
-});
 
-describe("Error Handling", () => {
-  test("should return 404 - path not found", () => {
-    return request(app)
-      .get("/api/brokenUrl")
-      .expect(404)
-      .then((response) => {
-        expect(response.body.message).toBe("path not found");
-      });
+  //vvv Global test - can apply to any endpoint. If endpoint doesn't exist -> 404.
+  describe("Error Handling", () => {
+    test("should return 404 - path not found", () => {
+      return request(app)
+        .get("/api/brokenUrl")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.message).toBe("path not found");
+        });
+    });
   });
 });
