@@ -53,9 +53,9 @@ describe("/api/articles/:article_id", () => {
           });
         });
     });
-    test("status 400 - invalid article id", () => {
+    test("status 400 -  responds wth an error message when given invalid article id", () => {
       return request(app)
-        .get("/api/articles/banana") //<<< 999 would give 404 as it COULD exist as it is a number
+        .get("/api/articles/bananaN") //<<< 999 would give 404 as it COULD exist as it is a number. Banana is an INVALID ID
         .expect(400) //<<< for impossible input like banana
         .then(({ body }) => {
           expect(body.msg).toBe("invalid request");
@@ -75,3 +75,5 @@ describe("/api/articles/:article_id", () => {
     });
   });
 });
+
+//CAN'T TEST FOR 500 - Server Error
