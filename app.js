@@ -1,11 +1,13 @@
 const express = require("express");
-const { getTopics } = require("./controllers.js");
+const { getTopics, getArticleById } = require("./controllers.js");
 
 const app = express();
 
 app.use(express.json()); //<<< Not sure why?
 
 app.get("/api/topics", getTopics);
+
+app.get("/api/articles/:article_id", getArticleById);
 
 // app.post
 

@@ -9,7 +9,9 @@ exports.fetchTopics = () => {
 exports.fetchArticleById = (article_id) => {
   return db
     .query("SELECT * FROM articles WHERE  article_id = $1;", [article_id])
-    .then(result.rows[0]);
+    .then((result) => {
+      return result.rows[0];
+    });
 };
 
 //Write models and controllers

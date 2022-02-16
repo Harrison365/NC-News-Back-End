@@ -42,14 +42,13 @@ describe("/api/articles/:article_id", () => {
         .get("/api/articles/3")
         .expect(200)
         .then((response) => {
-          expect(response.body).toEqual({
-            //^^^.article???
+          expect(response.body.article).toEqual({
             article_id: 3,
             title: "Eight pug gifs that remind me of mitch",
             topic: "mitch",
             author: "icellusedkars",
             body: "some gifs",
-            created_at: 1604394720000,
+            created_at: "2020-11-03T09:12:00.000Z",
             votes: 0,
           });
         });
