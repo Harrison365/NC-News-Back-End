@@ -6,11 +6,12 @@ const app = require("../app.js"); //access endpoints + express
 const { response } = require("express");
 
 beforeEach(() => seed(data));
-//^Reset data before every test.
+//^^^Reset data before every test.
 
 afterAll(() => db.end());
-//^Closes connection with psql after tests.
+//^^^Closes connection with psql after tests.
 
+//vvv GET all topics from topic db.
 describe("/api/topics", () => {
   describe("GET", () => {
     test("status: 200 - responds with array of all topic objects", () => {
@@ -18,7 +19,6 @@ describe("/api/topics", () => {
         .get("/api/topics")
         .expect(200)
         .then((response) => {
-          console.log(response);
           expect(response.body.topics).toHaveLength(3);
           response.body.topics.forEach((topic) => {
             expect(topic).toEqual(
@@ -27,6 +27,30 @@ describe("/api/topics", () => {
                 slug: expect.any(String),
               })
             );
+          });
+        });
+    });
+  });
+});
+
+//vvv GET article when given article_id
+
+describe("/api/articles/:article_id", () => {
+  describe("GET", () => {
+    test("status: 200 - responds with specified article object", () => {
+      return request(app)
+        .get("/api/articles/3")
+        .expect(200)
+        .then((response) => {
+          expect(response.body).toEqual({
+            //^^^.article???
+            article_id: 3,
+            title: "Eight pug gifs that remind me of mitch",
+            topic: "mitch",
+            author: "icellusedkars",
+            body: "some gifs",
+            created_at: 1604394720000,
+            votes: 0,
           });
         });
     });
