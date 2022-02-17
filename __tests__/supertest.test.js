@@ -6,11 +6,12 @@ const app = require("../app.js"); //access endpoints + express
 const { response } = require("express");
 
 beforeEach(() => seed(data));
-//^Reset data before every test.
+//^^^Reset data before every test.
 
 afterAll(() => db.end());
-//^Closes connection with psql after tests.
+//^^^Closes connection with psql after tests.
 
+//vvv GET all topics from topic db.
 describe("/api/topics", () => {
   describe("GET", () => {
     test("status: 200 - responds with array of all topic objects", () => {
@@ -18,7 +19,6 @@ describe("/api/topics", () => {
         .get("/api/topics")
         .expect(200)
         .then((response) => {
-          console.log(response);
           expect(response.body.topics).toHaveLength(3);
           response.body.topics.forEach((topic) => {
             expect(topic).toEqual(
@@ -33,13 +33,113 @@ describe("/api/topics", () => {
   });
 });
 
-describe("Error Handling", () => {
-  test("should return 404 - path not found", () => {
+//vvv GET article when given article_id
+
+describe("/api/articles/:article_id", () => {
+  describe("GET", () => {
+    test("status: 200 - responds with specified article object", () => {
+      return request(app)
+        .get("/api/articles/3")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.article).toEqual({
+            article_id: 3,
+            title: "Eight pug gifs that remind me of mitch",
+            topic: "mitch",
+            author: "icellusedkars",
+            body: "some gifs",
+            created_at: "2020-11-03T09:12:00.000Z",
+            votes: 0,
+          });
+        });
+    });
+    test("status 400 -  responds wth an error message when given invalid article id", () => {
+      return request(app)
+        .get("/api/articles/banana") //<<< 999 would give 404 as it COULD exist as it is a number. Banana is an INVALID ID
+        .expect(400) //<<< for impossible input like banana
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid input");
+        });
+    });
+    test("Status 404 -  valid but non existant id", () => {
+      return request(app)
+        .get("/api/articles/999") //<<<plausable but not existant
+        .expect(404) //<<<for plausable but not existant
+        .then(({ body }) => {
+          expect(body.msg).toBe("invalid id");
+        });
+    });
+  });
+
+  ///////vvv VOTE PATCH vvv////////////////
+
+  describe("PATCH", () => {
+    test("Status 201 - updates article vote count", () => {
+      const vote = { inc_votes: 23 };
+      return request(app)
+        .patch("/api/articles/2")
+        .send(vote) //this becomes req.body
+        .expect(201)
+        .then((response) => {
+          console.log(response.body);
+          expect(response.body.article.votes).toEqual(23);
+        });
+    });
+  });
+  test("status 400 -  responds wth an error message when given invalid article id", () => {
+    const vote = { inc_votes: 23 };
     return request(app)
-      .get("/api/brokenUrl")
-      .expect(404)
-      .then((response) => {
-        expect(response.body.message).toBe("path not found");
+      .patch("/api/articles/banana")
+      .send(vote) //this becomes req.body
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid input");
       });
   });
+  test("Status 404 -  valid but non existant id", () => {
+    const vote = { inc_votes: 23 };
+    return request(app)
+      .patch("/api/articles/999")
+      .send(vote) //this becomes req.body
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("invalid id");
+      });
+  });
+  test("Status 400 - invalid patch request", () => {
+    const vote = {};
+    return request(app)
+      .patch("/api/articles/2")
+      .send(vote) //this becomes req.body
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("invalid patch request");
+      }); //dont know how to get it to come here
+  });
+  test("Status 400 - invalid patch request", () => {
+    const vote = { inc_votes: 23, votes: 23 };
+    return request(app)
+      .patch("/api/articles/2")
+      .send(vote) //this becomes req.body
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("invalid patch request");
+      }); //dont know how to get it to come here
+  });
+
+  ///////^^^ VOTE PATCH ^^^////////////////
+
+  //vvv Global test - can apply to any endpoint. If endpoint doesn't exist -> 404.
+  describe("Error Handling", () => {
+    test("should return 404 - path not found", () => {
+      return request(app)
+        .get("/api/brokenUrl")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.message).toBe("path not found");
+        });
+    });
+  });
 });
+
+//CAN'T TEST FOR 500 - Server Error
