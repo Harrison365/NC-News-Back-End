@@ -47,3 +47,11 @@ exports.voteAdder = (article_id, body) => {
       })
   );
 };
+
+//vvv Get array of usernames from users db ////////////////
+
+exports.fetchUsers = () => {
+  return db.query("SELECT username FROM users;").then((result) => {
+    return result.rows;
+  });
+};

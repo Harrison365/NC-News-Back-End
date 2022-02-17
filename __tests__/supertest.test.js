@@ -126,18 +126,36 @@ describe("/api/articles/:article_id", () => {
       }); //dont know how to get it to come here
   });
 
-  ///////^^^ VOTE PATCH ^^^////////////////
-
-  //vvv Global test - can apply to any endpoint. If endpoint doesn't exist -> 404.
-  describe("Error Handling", () => {
-    test("should return 404 - path not found", () => {
-      return request(app)
-        .get("/api/brokenUrl")
-        .expect(404)
-        .then((response) => {
-          expect(response.body.message).toBe("path not found");
-        });
+  //vvv GET all usernames from users db.
+  describe("/api/users", () => {
+    describe("GET", () => {
+      test("status: 200 - responds with array of all username keys", () => {
+        return request(app)
+          .get("/api/users")
+          .expect(200)
+          .then((response) => {
+            expect(response.body.users).toHaveLength(4);
+            expect(response.body.users).toEqual([
+              { username: "butter_bridge" },
+              { username: "icellusedkars" },
+              { username: "rogersop" },
+              { username: "lurker" },
+            ]);
+          });
+      });
     });
+  });
+});
+
+//vvv Global test - can apply to any endpoint. If endpoint doesn't exist -> 404.
+describe("Error Handling", () => {
+  test("should return 404 - path not found", () => {
+    return request(app)
+      .get("/api/brokenUrl")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.message).toBe("path not found");
+      });
   });
 });
 

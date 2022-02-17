@@ -1,4 +1,9 @@
-const { fetchTopics, fetchArticleById, voteAdder } = require("./models.js");
+const {
+  fetchTopics,
+  fetchArticleById,
+  voteAdder,
+  fetchUsers,
+} = require("./models.js");
 
 //vvv Get all topics
 exports.getTopics = (req, res) => {
@@ -33,5 +38,16 @@ exports.patchVote = (req, res, next) => {
     })
     .catch((err) => {
       next(err);
+    });
+};
+
+//vvv Get array of usernames from users db
+exports.getUsers = (req, res) => {
+  fetchUsers()
+    .then((result) => {
+      res.status(200).send({ users: result });
+    })
+    .catch((err) => {
+      console.log(err);
     });
 };
