@@ -1,5 +1,6 @@
 const { fetchTopics, fetchArticleById, voteAdder } = require("./models.js");
 
+//vvv Get all topics
 exports.getTopics = (req, res) => {
   fetchTopics()
     .then((result) => {
@@ -10,6 +11,7 @@ exports.getTopics = (req, res) => {
     });
 };
 
+//vvv Get article by ID
 exports.getArticleById = (req, res, next) => {
   const article_id = req.params.article_id;
   fetchArticleById(article_id)
@@ -21,6 +23,7 @@ exports.getArticleById = (req, res, next) => {
     });
 };
 
+//vvv Patch to change vote on specific article
 exports.patchVote = (req, res, next) => {
   const article_id = req.params.article_id;
   const body = req.body;

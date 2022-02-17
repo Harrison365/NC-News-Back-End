@@ -1,11 +1,13 @@
 const db = require("./db/connection.js");
 
+//vvv Get all topics///////////////////////////////////////////////////////
 exports.fetchTopics = () => {
   return db.query("SELECT * FROM topics;").then((result) => {
     return result.rows;
   });
 };
 
+//vvv Get article by ID////////////////////////////////////////////////////
 exports.fetchArticleById = (article_id) => {
   return db
     .query("SELECT * FROM articles WHERE  article_id = $1;", [article_id])
@@ -16,6 +18,7 @@ exports.fetchArticleById = (article_id) => {
     });
 };
 
+/////////////////vvv Patch to change vote on specific article//////////////
 exports.voteAdder = (article_id, body) => {
   //vvv if article id is not a number, reject. vvv
   let article_idNumber = parseInt(article_id);
