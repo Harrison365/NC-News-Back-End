@@ -11,12 +11,12 @@ exports.fetchArticleById = (article_id) => {
     .query("SELECT * FROM articles WHERE  article_id = $1;", [article_id])
     .then((result) => {
       if (result.rows.length === 0) {
-        return Promise.reject({ status: 404, msg: "invalid id" });
+        return Promise.reject({ status: 404, msg: "ID not found" });
       } else return result.rows[0];
     });
 };
 
-exports.votingModel = (article_id, body) => {
+exports.voteAdder = (article_id, body) => {
   //vvv if article id is not a number, reject. vvv
   let article_idNumber = parseInt(article_id);
   if (typeof article_idNumber !== "number") {
@@ -37,7 +37,7 @@ exports.votingModel = (article_id, body) => {
       //vvv return altered article unless article is empty (i.e. 999 not made yet)
       .then((result) => {
         if (result.rows.length === 0) {
-          return Promise.reject({ status: 404, msg: "invalid id" });
+          return Promise.reject({ status: 404, msg: "ID not found" });
         } else {
           return result.rows[0];
         }

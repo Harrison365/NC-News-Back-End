@@ -66,7 +66,7 @@ describe("/api/articles/:article_id", () => {
         .get("/api/articles/999") //<<<plausable but not existant
         .expect(404) //<<<for plausable but not existant
         .then(({ body }) => {
-          expect(body.msg).toBe("invalid id");
+          expect(body.msg).toBe("ID not found");
         });
     });
   });
@@ -74,14 +74,13 @@ describe("/api/articles/:article_id", () => {
   ///////vvv VOTE PATCH vvv////////////////
 
   describe("PATCH", () => {
-    test("Status 201 - updates article vote count", () => {
+    test("Status 200 - updates article vote count", () => {
       const vote = { inc_votes: 23 };
       return request(app)
         .patch("/api/articles/2")
         .send(vote) //this becomes req.body
-        .expect(201)
+        .expect(200)
         .then((response) => {
-          console.log(response.body);
           expect(response.body.article.votes).toEqual(23);
         });
     });
@@ -103,7 +102,7 @@ describe("/api/articles/:article_id", () => {
       .send(vote) //this becomes req.body
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("invalid id");
+        expect(body.msg).toBe("ID not found");
       });
   });
   test("Status 400 - invalid patch request", () => {

@@ -1,4 +1,4 @@
-const { fetchTopics, fetchArticleById, votingModel } = require("./models.js");
+const { fetchTopics, fetchArticleById, voteAdder } = require("./models.js");
 
 exports.getTopics = (req, res) => {
   fetchTopics()
@@ -22,12 +22,11 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.patchVote = (req, res, next) => {
-  console.log("in controller");
   const article_id = req.params.article_id;
   const body = req.body;
-  votingModel(article_id, body)
+  voteAdder(article_id, body)
     .then((result) => {
-      res.status(201).send({ article: result });
+      res.status(200).send({ article: result });
     })
     .catch((err) => {
       next(err);
