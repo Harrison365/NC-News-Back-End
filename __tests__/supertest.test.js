@@ -42,17 +42,27 @@ describe("/api/articles/:article_id", () => {
         .get("/api/articles/3")
         .expect(200)
         .then((response) => {
-          expect(response.body.article).toEqual({
-            article_id: 3,
-            title: "Eight pug gifs that remind me of mitch",
-            topic: "mitch",
-            author: "icellusedkars",
-            body: "some gifs",
-            created_at: "2020-11-03T09:12:00.000Z",
-            votes: 0,
-          });
+          expect(response.body.article).toEqual(
+            expect.objectContaining({
+              article_id: 3,
+              title: "Eight pug gifs that remind me of mitch",
+              topic: "mitch",
+              author: "icellusedkars",
+              body: "some gifs",
+              created_at: "2020-11-03T09:12:00.000Z",
+              votes: 0,
+            })
+          );
         });
     });
+    test("status 200- article object has comment count", () => {
+      return request(app)
+        .get("/api/articles/3")
+        .then((response) => {
+          expect(response.body.article.comment_count).toBe("2");
+        });
+    });
+
     test("status 400 -  responds wth an error message when given invalid article id", () => {
       return request(app)
         .get("/api/articles/banana") //<<< 999 would give 404 as it COULD exist as it is a number. Banana is an INVALID ID
@@ -126,18 +136,79 @@ describe("/api/articles/:article_id", () => {
       }); //dont know how to get it to come here
   });
 
-  ///////^^^ VOTE PATCH ^^^////////////////
+  //vvv GET all usernames from users db.
+  describe("/api/users", () => {
+    describe("GET", () => {
+      test("status: 200 - responds with array of all username keys", () => {
+        return request(app)
+          .get("/api/users")
+          .expect(200)
+          .then((response) => {
+            expect(response.body.users).toHaveLength(4);
+            expect(response.body.users).toEqual([
+              { username: "butter_bridge" },
+              { username: "icellusedkars" },
+              { username: "rogersop" },
+              { username: "lurker" },
+            ]);
+          });
+      });
+    });
+  });
+});
 
-  //vvv Global test - can apply to any endpoint. If endpoint doesn't exist -> 404.
-  describe("Error Handling", () => {
-    test("should return 404 - path not found", () => {
+//vvv GET all articles from articles db.
+describe("/api/articles", () => {
+  describe("GET", () => {
+    test("status: 200 - responds with array of all article objects", () => {
       return request(app)
-        .get("/api/brokenUrl")
-        .expect(404)
+        .get("/api/articles")
+        .expect(200)
         .then((response) => {
-          expect(response.body.message).toBe("path not found");
+          expect(response.body.articles).toHaveLength(12);
+          response.body.articles.forEach((article) => {
+            expect(article).toEqual(
+              expect.objectContaining({
+                article_id: expect.any(Number),
+                title: expect.any(String),
+                topic: expect.any(String),
+                author: expect.any(String),
+                body: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+              })
+            );
+          });
         });
     });
+  });
+});
+
+//vvv GET Comment count for specified article
+
+// describe.only("/api/articles/:article_id COMMENT COUNT QUERY", () => {
+//   describe("GET", () => {
+//     test("status: 200 - responds with specified article object", () => {
+//       return request(app)
+//         .get("/api/articles/1?comment_count") //<<< is there a key-word for this query
+//         .expect(200)
+//         .then((response) => {
+//           expect(response.body.comment_count).toEqual(11);
+//         });
+//     });
+//   });
+// });
+// '11 comments for article 1'
+
+//vvv Global test - can apply to any endpoint. If endpoint doesn't exist -> 404.
+describe("Error Handling", () => {
+  test("should return 404 - path not found", () => {
+    return request(app)
+      .get("/api/brokenUrl")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.message).toBe("path not found");
+      });
   });
 });
 

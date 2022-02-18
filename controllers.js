@@ -1,4 +1,10 @@
-const { fetchTopics, fetchArticleById, voteAdder } = require("./models.js");
+const {
+  fetchTopics,
+  fetchArticleById,
+  voteAdder,
+  fetchUsers,
+  fetchArticles,
+} = require("./models.js");
 
 //vvv Get all topics
 exports.getTopics = (req, res) => {
@@ -35,3 +41,29 @@ exports.patchVote = (req, res, next) => {
       next(err);
     });
 };
+
+//vvv Get array of usernames from users db
+exports.getUsers = (req, res) => {
+  fetchUsers()
+    .then((result) => {
+      res.status(200).send({ users: result });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+//vvv GET all articles from articles db.
+
+exports.getArticles = (req, res) => {
+  fetchArticles()
+    .then((result) => {
+      res.status(200).send({ articles: result }); //<<< dont understand this destructuring.
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+//vvv GET Comment count for specified article //
+//May need to add onto 'Get Article by ID' on line 20
