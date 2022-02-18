@@ -5,6 +5,7 @@ const {
   fetchUsers,
   fetchArticles,
   fetchCommentsById,
+  checkArticleExists,
 } = require("./models.js");
 
 //vvv Get all topics
@@ -70,11 +71,10 @@ exports.getArticles = (req, res) => {
 
 exports.getCommentsById = (req, res, next) => {
   //^^^Next; we expect errors for parametric (:) endpoints
-  console.log("in controller");
   const article_id = req.params.article_id;
-  fetchCommentsById(article_id)
+  Promise.all([fetchCommentsById(article_id), checkArticleExists(article_id)])
     .then((result) => {
-      res.status(200).send({ comments: result });
+      res.status(200).send({ comments: result[0] });
     })
     .catch((err) => {
       next(err);

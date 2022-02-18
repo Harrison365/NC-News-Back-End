@@ -187,7 +187,7 @@ describe("/api/articles", () => {
 
 //vvv GET comments when given article_id
 
-describe.only("/api/articles/:article_id/comments", () => {
+describe("/api/articles/:article_id/comments", () => {
   describe("GET", () => {
     test("status: 200 - responds with array of comments with specified article_id", () => {
       return request(app)
@@ -207,6 +207,15 @@ describe.only("/api/articles/:article_id/comments", () => {
               })
             );
           });
+        });
+    });
+    //Extra happy test for 0 comments on an article
+    test("status: 200 - empty array if no comments but on an EXISTING article", () => {
+      return request(app)
+        .get("/api/articles/2/comments")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.comments).toEqual([]);
         });
     });
     // Sad path vvv
