@@ -4,6 +4,7 @@ const {
   voteAdder,
   fetchUsers,
   fetchArticles,
+  fetchCommentsById,
 } = require("./models.js");
 
 //vvv Get all topics
@@ -17,7 +18,7 @@ exports.getTopics = (req, res) => {
     });
 };
 
-//vvv Get article by ID
+//vvv Get article by ID (+comment count)
 exports.getArticleById = (req, res, next) => {
   const article_id = req.params.article_id;
   fetchArticleById(article_id)
@@ -65,5 +66,17 @@ exports.getArticles = (req, res) => {
     });
 };
 
-//vvv GET Comment count for specified article //
-//May need to add onto 'Get Article by ID' on line 20
+//vvv GET comments for specified article_id
+
+exports.getCommentsById = (req, res, next) => {
+  //^^^Next; we expect errors for parametric (:) endpoints
+  console.log("in controller");
+  const article_id = req.params.article_id;
+  fetchCommentsById(article_id)
+    .then((result) => {
+      res.status(200).send({ comments: result });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};

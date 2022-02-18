@@ -55,6 +55,7 @@ describe("/api/articles/:article_id", () => {
           );
         });
     });
+    //EXTRA Test for comment count vvv
     test("status 200- article object has comment count", () => {
       return request(app)
         .get("/api/articles/3")
@@ -62,7 +63,7 @@ describe("/api/articles/:article_id", () => {
           expect(response.body.article.comment_count).toBe("2");
         });
     });
-
+    // Sad path vvv
     test("status 400 -  responds wth an error message when given invalid article id", () => {
       return request(app)
         .get("/api/articles/banana") //<<< 999 would give 404 as it COULD exist as it is a number. Banana is an INVALID ID
@@ -184,21 +185,49 @@ describe("/api/articles", () => {
   });
 });
 
-//vvv GET Comment count for specified article
+//vvv GET comments when given article_id
 
-// describe.only("/api/articles/:article_id COMMENT COUNT QUERY", () => {
-//   describe("GET", () => {
-//     test("status: 200 - responds with specified article object", () => {
-//       return request(app)
-//         .get("/api/articles/1?comment_count") //<<< is there a key-word for this query
-//         .expect(200)
-//         .then((response) => {
-//           expect(response.body.comment_count).toEqual(11);
-//         });
-//     });
-//   });
-// });
-// '11 comments for article 1'
+describe.only("/api/articles/:article_id/comments", () => {
+  describe("GET", () => {
+    test("status: 200 - responds with array of comments with specified article_id", () => {
+      return request(app)
+        .get("/api/articles/3/comments")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.comments).toHaveLength(2);
+          response.body.comments.forEach((comment) => {
+            expect(comment).toEqual(
+              expect.objectContaining({
+                comment_id: expect.any(Number),
+                body: expect.any(String),
+                votes: expect.any(Number),
+                author: expect.any(String),
+                article_id: expect.any(Number),
+                created_at: expect.any(String),
+              })
+            );
+          });
+        });
+    });
+    // Sad path vvv
+    test("status 400 -  responds with an error message when given invalid article id", () => {
+      return request(app)
+        .get("/api/articles/banana/comments") //<<< 999 would give 404 as it COULD exist as it is a number. Banana is an INVALID ID
+        .expect(400) //<<< for impossible input like banana
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid input");
+        });
+    });
+    test("Status 404 -  valid but non existant id", () => {
+      return request(app)
+        .get("/api/articles/999/comments") //<<<plausable but not existant
+        .expect(404) //<<<for plausable but not existant
+        .then(({ body }) => {
+          expect(body.msg).toBe("ID not found");
+        });
+    });
+  });
+});
 
 //vvv Global test - can apply to any endpoint. If endpoint doesn't exist -> 404.
 describe("Error Handling", () => {

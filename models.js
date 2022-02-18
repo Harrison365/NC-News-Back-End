@@ -7,11 +7,14 @@ exports.fetchTopics = () => {
   });
 };
 
-//vvv Get article by ID////////////////////////////////////////////////////
+//vvv Get article by ID (+comment count)////////////////////////////////////////////////////
 exports.fetchArticleById = (article_id) => {
-  return db
-    .query(
-      `
+  return (
+    db
+      // .query(`SELECT * FROM articles WHERE  article_id = $1;`, [article_id])
+      //^^^ query for just article stuff
+      .query(
+        `
     SELECT articles.*, 
     COUNT(comments.article_id) AS comment_count 
     FROM articles 
@@ -19,13 +22,15 @@ exports.fetchArticleById = (article_id) => {
     WHERE articles.article_id = $1 
     GROUP BY articles.article_id;
     `,
-      [article_id]
-    )
-    .then((result) => {
-      if (result.rows.length === 0) {
-        return Promise.reject({ status: 404, msg: "ID not found" });
-      } else return result.rows[0];
-    });
+        [article_id]
+      )
+      //^^^ query for article stuff THEN assind a row which is a count of comments that have the same article ID,
+      .then((result) => {
+        if (result.rows.length === 0) {
+          return Promise.reject({ status: 404, msg: "ID not found" });
+        } else return result.rows[0];
+      })
+  );
 };
 
 /////////////////vvv Patch to change vote on specific article//////////////
@@ -72,4 +77,19 @@ exports.fetchArticles = () => {
   return db.query("SELECT * FROM articles;").then((result) => {
     return result.rows;
   });
+};
+
+//vvv Get comments by ID////////////////////////////////////////////////////
+exports.fetchCommentsById = (article_id) => {
+  console.log("in model");
+  return db
+    .query(`SELECT * FROM comments WHERE  article_id = $1;`, [article_id])
+    .then((result) => {
+      if (result.rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "ID not found" });
+      } else {
+        console.log(result.rows);
+        return result.rows;
+      }
+    });
 };
