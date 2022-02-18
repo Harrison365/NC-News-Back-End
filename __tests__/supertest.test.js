@@ -250,4 +250,5 @@ describe("Error Handling", () => {
   });
 });
 
+HELLO;
 //CAN'T TEST FOR 500 - Server Error
