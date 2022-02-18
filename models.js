@@ -7,11 +7,14 @@ exports.fetchTopics = () => {
   });
 };
 
-//vvv Get article by ID////////////////////////////////////////////////////
+//vvv Get article by ID (+comment count)////////////////////////////////////////////////////
 exports.fetchArticleById = (article_id) => {
-  return db
-    .query(
-      `
+  return (
+    db
+      // .query(`SELECT * FROM articles WHERE  article_id = $1;`, [article_id])
+      //^^^ query for just article stuff
+      .query(
+        `
     SELECT articles.*, 
     COUNT(comments.article_id) AS comment_count 
     FROM articles 
@@ -19,13 +22,16 @@ exports.fetchArticleById = (article_id) => {
     WHERE articles.article_id = $1 
     GROUP BY articles.article_id;
     `,
-      [article_id]
-    )
-    .then((result) => {
-      if (result.rows.length === 0) {
-        return Promise.reject({ status: 404, msg: "ID not found" });
-      } else return result.rows[0];
-    });
+        [article_id]
+      )
+      //^^^ query for article stuff THEN assind a row which is a count of comments that have the same article ID,
+      .then((result) => {
+        if (result.rows.length === 0) {
+          //<Hard coded: if nothing is returned we assume its because this article_id doesnt exist
+          return Promise.reject({ status: 404, msg: "ID not found" });
+        } else return result.rows[0];
+      })
+  );
 };
 
 /////////////////vvv Patch to change vote on specific article//////////////
@@ -72,4 +78,31 @@ exports.fetchArticles = () => {
   return db.query("SELECT * FROM articles;").then((result) => {
     return result.rows;
   });
+};
+
+//CHECK ARTICLE EXISTS vv///////
+
+exports.checkArticleExists = (article_id) => {
+  return db
+    .query("SELECT * FROM articles WHERE article_id = $1;", [article_id])
+    .then((result) => {
+      if (result.rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "ID not found" });
+        //dont need a positive return :) just the promise.reject
+      }
+    });
+};
+
+//vvv Get comments by ID////////////////////////////////////////////////////
+exports.fetchCommentsById = (article_id) => {
+  return db
+    .query(`SELECT * FROM comments WHERE  article_id = $1;`, [article_id])
+    .then((result) => {
+      //vvv here, we can't hard code like on line 29 as we cant assume 0 responses means that the article doesnt exist
+      //It may exist but have no comments. so we need to check it exists another way...vvv
+      //We create another model called check 'parametric e.g. article_id' exists. SEE ABOVE
+      //We can then invoke this in the controller with a promise all
+      //We could also do this instead of line 29 but want to keep this just to see the alternative.
+      return result.rows;
+    });
 };
