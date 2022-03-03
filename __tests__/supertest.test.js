@@ -4,6 +4,7 @@ const db = require("../db/connection.js"); //allows access to psql (connection.j
 const seed = require("../db/seeds/seed.js"); //access seed function
 const app = require("../app.js"); //access endpoints + express
 const { response } = require("express");
+const { string } = require("pg-format");
 
 beforeEach(() => seed(data));
 //^^^Reset data before every test.
@@ -96,6 +97,7 @@ describe("/api/articles/:article_id", () => {
         });
     });
   });
+  //// sad path ////
   test("status 400 -  responds wth an error message when given invalid article id", () => {
     const vote = { inc_votes: 23 };
     return request(app)
@@ -158,34 +160,34 @@ describe("/api/articles/:article_id", () => {
   });
 });
 
-//vvv GET all articles from articles db.
-describe("/api/articles", () => {
-  describe("GET", () => {
-    test("status: 200 - responds with array of all article objects", () => {
-      return request(app)
-        .get("/api/articles")
-        .expect(200)
-        .then((response) => {
-          expect(response.body.articles).toHaveLength(12);
-          response.body.articles.forEach((article) => {
-            expect(article).toEqual(
-              expect.objectContaining({
-                article_id: expect.any(Number),
-                title: expect.any(String),
-                topic: expect.any(String),
-                author: expect.any(String),
-                body: expect.any(String),
-                created_at: expect.any(String),
-                votes: expect.any(Number),
-              })
-            );
-          });
-        });
-    });
-  });
-});
+//vvv GET all articles from articles db. (see with comment count)
+// describe("/api/articles", () => {
+//   describe("GET", () => {
+//     test("status: 200 - responds with array of all article objects", () => {
+//       return request(app)
+//         .get("/api/articles")
+//         .expect(200)
+//         .then((response) => {
+//           expect(response.body.articles).toHaveLength(12);
+//           response.body.articles.forEach((article) => {
+//             expect(article).toEqual(
+//               expect.objectContaining({
+//                 article_id: expect.any(Number),
+//                 title: expect.any(String),
+//                 topic: expect.any(String),
+//                 author: expect.any(String),
+//                 body: expect.any(String),
+//                 created_at: expect.any(String),
+//                 votes: expect.any(Number),
+//               })
+//             );
+//           });
+//         });
+//     });
+//   });
+// });
 
-//vvv GET comments when given article_id
+//vvv GET comments when given article_id vvv///
 
 describe("/api/articles/:article_id/comments", () => {
   describe("GET", () => {
@@ -238,6 +240,145 @@ describe("/api/articles/:article_id/comments", () => {
   });
 });
 
+//vvv GET each article, including a comment count vvv ////////
+
+describe("/api/articles", () => {
+  describe("GET", () => {
+    test("status: 200 - responds with array of all article objects", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles).toHaveLength(12);
+          response.body.articles.forEach((article) => {
+            expect(article).toEqual(
+              expect.objectContaining({
+                article_id: expect.any(Number),
+                title: expect.any(String),
+                topic: expect.any(String),
+                author: expect.any(String),
+                body: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                comment_count: expect.any(String),
+              })
+            );
+          });
+        });
+    });
+    //vvv ORDERING QUERIES default ordering (no query given) CHANGE THESE VVVVVVV
+    //     test("status: 200 - should return articles in date order ", () => {
+    //       return request(app)
+    //         .get("/api/treasures")
+    //         .expect(200)
+    //         .then((response) => {
+    //           expect(response.body.treasures[0].age).toEqual(1);
+    //         });
+    //     });
+    //     //vvv order by given query
+    //     test("status: 200 - should return all treaure sorted by cost_at_auction", () => {
+    //       return request(app)
+    //         .get("/api/treasures?sort_by=cost_at_auction")
+    //         .expect(200)
+    //         .then((response) => {
+    //           expect(response.body.treasures[0].cost_at_auction).toEqual(0.01);
+    //         });
+    //     });
+    //   });
+    // });
+
+    //vvv POST comment object to article when given ID. Responds with the posted comment
+
+    describe("POST", () => {
+      test("status: 201 - responds with comment object passed", () => {
+        const newComment = {
+          username: "rogersop",
+          body: "This is my pushed comment",
+        };
+        return request(app)
+          .post("/api/articles/12/comments")
+          .send(newComment)
+          .expect(201)
+          .then((response) => {
+            expect(response.body.comment).toEqual(
+              //no length of array because article 12 should have 0 before post
+              expect.objectContaining({
+                body: "This is my pushed comment",
+                votes: 0,
+                author: "rogersop",
+                article_id: 12,
+                created_at: expect.any(String),
+              })
+            );
+          });
+      });
+      //// sad path ////
+      test("status 400 -  responds wth an error message when given invalid article id", () => {
+        const newComment = {
+          username: "rogersop",
+          body: "This is my pushed comment",
+        };
+        return request(app)
+          .post("/api/articles/banana/comments")
+          .send(newComment) //this becomes req.body
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Invalid input");
+          });
+      });
+      test("Status 404 -  valid but non existant id", () => {
+        const newComment = {
+          username: "rogersop",
+          body: "This is my pushed comment",
+        };
+        return request(app)
+          .post("/api/articles/999/comments")
+          .send(newComment) //this becomes req.body
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).toBe("path not found");
+          });
+      });
+      test("Status 400 - invalid post request", () => {
+        const newComment = {};
+        return request(app)
+          .post("/api/articles/12/comments")
+          .send(newComment) //this becomes req.body
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("invalid post request");
+          }); //dont know how to get it to come here
+      });
+      test("Status 400 - invalid patch request", () => {
+        const newComment = {
+          username: "rogersop",
+          username: "This is my pushed comment",
+        };
+        return request(app)
+          .post("/api/articles/12/comments")
+          .send(newComment) //this becomes req.body
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("invalid post request");
+          }); //dont know how to get it to come here
+      });
+    });
+  });
+});
+
+// describe("PATCH", () => {
+//   test("Status 200 - updates article vote count", () => {
+//     const vote = { inc_votes: 23 };
+//     return request(app)
+//       .patch("/api/articles/2")
+//       .send(vote) //this becomes req.body
+//       .expect(200)
+//       .then((response) => {
+//         expect(response.body.article.votes).toEqual(23);
+//       });
+//   });
+// });
+
 //vvv Global test - can apply to any endpoint. If endpoint doesn't exist -> 404.
 describe("Error Handling", () => {
   test("should return 404 - path not found", () => {
@@ -250,5 +391,4 @@ describe("Error Handling", () => {
   });
 });
 
-HELLO;
 //CAN'T TEST FOR 500 - Server Error

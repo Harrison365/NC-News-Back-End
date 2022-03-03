@@ -6,6 +6,7 @@ const {
   getUsers,
   getArticles,
   getCommentsById,
+  postComment,
 } = require("./controllers.js");
 
 const app = express();
@@ -24,7 +25,7 @@ app.get("/api/articles", getArticles);
 
 app.get("/api/articles/:article_id/comments", getCommentsById);
 
-// app.post
+app.post("/api/articles/:article_id/comments", postComment);
 
 // etc...
 
@@ -38,7 +39,11 @@ app.use((err, req, res, next) => {
 app.use((err, req, res, next) => {
   if (err.code === "22P02") {
     res.status(400).send({ msg: "Invalid input" });
-  } else next(err);
+  } else if (err.code === "23503") {
+    res.status(404).send({ msg: "path not found" });
+  } else {
+    next(err);
+  }
 });
 
 app.use((err, req, res, next) => {

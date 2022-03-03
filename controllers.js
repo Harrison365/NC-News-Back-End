@@ -6,6 +6,7 @@ const {
   fetchArticles,
   fetchCommentsById,
   checkArticleExists,
+  addComment,
 } = require("./models.js");
 
 //vvv Get all topics
@@ -57,6 +58,17 @@ exports.getUsers = (req, res) => {
 
 //vvv GET all articles from articles db.
 
+//vvv Without comment_count vvv///
+// exports.getArticles = (req, res) => {
+//   fetchArticles()
+//     .then((result) => {
+//       res.status(200).send({ articles: result }); //<<< dont understand this destructuring.
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//     });
+// };
+//vvv with vvv/////
 exports.getArticles = (req, res) => {
   fetchArticles()
     .then((result) => {
@@ -80,3 +92,33 @@ exports.getCommentsById = (req, res, next) => {
       next(err);
     });
 };
+
+//vvv POST comment object to article when given ID. Responds with the posted comment vvv////
+
+exports.postComment = (req, res, next) => {
+  //parametric means we need a next//
+
+  const article_id = req.params.article_id;
+  const body = req.body;
+
+  addComment(article_id, body)
+    .then((addedComment) => {
+      res.status(201).send({ comment: addedComment });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+//vvv Patch to change vote on specific article ///REPEAT!!!!
+// exports.patchVote = (req, res, next) => {
+//   const article_id = req.params.article_id;
+//   const body = req.body;
+//   voteAdder(article_id, body)
+//     .then((result) => {
+//       res.status(200).send({ article: result });
+//     })
+//     .catch((err) => {
+//       next(err);
+//     });
+// };

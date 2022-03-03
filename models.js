@@ -34,7 +34,7 @@ exports.fetchArticleById = (article_id) => {
   );
 };
 
-/////////////////vvv Patch to change vote on specific article//////////////
+//vvv Patch to change vote on specific article//////////////
 exports.voteAdder = (article_id, body) => {
   //vvv if article id is not a number, reject. vvv
   let article_idNumber = parseInt(article_id);
@@ -73,11 +73,26 @@ exports.fetchUsers = () => {
 };
 
 //vvv GET all articles from articles db /////////
-
+//vvv Without comment_count vvv///
+// exports.fetchArticles = () => {
+//   return db.query("SELECT * FROM articles;").then((result) => {
+//     return result.rows;
+//   });
+// };
+//vvv WITH vvv//////
 exports.fetchArticles = () => {
-  return db.query("SELECT * FROM articles;").then((result) => {
-    return result.rows;
-  });
+  return db
+    .query(
+      `SELECT articles.*, 
+    COUNT(comments.article_id) AS comment_count 
+    FROM articles 
+    LEFT JOIN comments ON articles.article_id = comments.article_id 
+    GROUP BY articles.article_id;
+    `
+    )
+    .then((result) => {
+      return result.rows;
+    });
 };
 
 //CHECK ARTICLE EXISTS vv///////
@@ -106,3 +121,64 @@ exports.fetchCommentsById = (article_id) => {
       return result.rows;
     });
 };
+
+//vvv POST comment object to article when given ID. Responds with the posted comment vvv////
+
+exports.addComment = (article_id, body) => {
+  // const { username , body } = commentToAdd //<<deconstruct
+  //vvv if article id is not a number, reject. vvv
+  let article_idNumber = parseInt(article_id);
+  if (typeof article_idNumber !== "number") {
+    return Promise.reject({ status: 400, msg: "Invalid input" });
+  }
+  // vvv if newComment is not provided or if there isnt exactly 2 keys passed to req.body, reject vvv
+
+  if (!body.username || !body.body || Object.keys(body).length !== 2) {
+    return Promise.reject({ status: 400, msg: "invalid post request" });
+  }
+  // vvv otherwise add comment vvv///
+  return db
+    .query(
+      ` 
+  INSERT INTO comments
+  (author, body, article_id)
+  VALUES 
+  ($1, $2, $3)
+  RETURNING *;`,
+      [body.username, body.body, article_id]
+    )
+    .then((result) => {
+      // console.log(result.rows);
+      return result.rows[0];
+    });
+};
+
+// //vvv Patch to change vote on specific article//////////////REPEAT!
+// exports.voteAdder = (article_id, body) => {
+//   //vvv if article id is not a number, reject. vvv
+//   let article_idNumber = parseInt(article_id);
+//   if (typeof article_idNumber !== "number") {
+//     return Promise.reject({ status: 400, msg: "Invalid input" });
+//   }
+//   // vvv if votes is not provided or if there isnt exactly 1 inc_votes key passed to req.body, reject vvv
+//   if (!body.inc_votes || Object.keys(body).length !== 1) {
+//     return Promise.reject({ status: 400, msg: "invalid patch request" });
+//   }
+//   //vvv otherwise, update the number of votes of article (given) by the amount indicated vvv
+//   return (
+//     db
+//       //return *
+//       .query(
+//         "UPDATE articles SET votes = votes + $1 WHERE  article_id = $2 RETURNING *;",
+//         [body.inc_votes, article_idNumber]
+//       )
+//       //vvv return altered article unless article is empty (i.e. 999 not made yet)
+//       .then((result) => {
+//         if (result.rows.length === 0) {
+//           return Promise.reject({ status: 404, msg: "ID not found" });
+//         } else {
+//           return result.rows[0];
+//         }
+//       })
+//   );
+// };
