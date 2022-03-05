@@ -366,6 +366,7 @@ describe("/api/articles", () => {
   });
 });
 
+//REPEAT vvv
 // describe("PATCH", () => {
 //   test("Status 200 - updates article vote count", () => {
 //     const vote = { inc_votes: 23 };
@@ -378,6 +379,24 @@ describe("/api/articles", () => {
 //       });
 //   });
 // });
+
+//DELETE Comment by comment id///
+describe.only("/api/comments/:comment_id", () => {
+  describe("DELETE", () => {
+    test("status(204), responds with an empty response body", () => {
+      return request(app).delete("/api/comments/1").expect(204);
+    });
+    //sad path
+    test("status(404), responds with an error if comment_id doesnt exist", () => {
+      return request(app)
+        .delete("/api/comments/6000")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe("Comment ID not found");
+        });
+    });
+  });
+});
 
 //vvv Global test - can apply to any endpoint. If endpoint doesn't exist -> 404.
 describe("Error Handling", () => {

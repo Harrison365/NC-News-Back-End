@@ -7,6 +7,7 @@ const {
   getArticles,
   getCommentsById,
   postComment,
+  deleteCommentByCommentId,
 } = require("./controllers.js");
 
 const app = express();
@@ -27,6 +28,7 @@ app.get("/api/articles/:article_id/comments", getCommentsById);
 
 app.post("/api/articles/:article_id/comments", postComment);
 
+app.delete("/api/comments/:comment_id", deleteCommentByCommentId);
 // etc...
 
 // vvv Could put in seperate error file and require them in vvv

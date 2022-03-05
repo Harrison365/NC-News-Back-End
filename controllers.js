@@ -7,6 +7,8 @@ const {
   fetchCommentsById,
   checkArticleExists,
   addComment,
+  fetchAndDeleteCommentByCommentId,
+  checkCommentExists,
 } = require("./models.js");
 
 //vvv Get all topics
@@ -104,6 +106,24 @@ exports.postComment = (req, res, next) => {
   addComment(article_id, body)
     .then((addedComment) => {
       res.status(201).send({ comment: addedComment });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+//DELETE Comment by comment id///
+
+exports.deleteCommentByCommentId = (req, res, next) => {
+  //^^^Next; we expect errors for parametric (:) endpoints
+  const comment_id = req.params.comment_id;
+  console.log("inc");
+  Promise.all([
+    fetchAndDeleteCommentByCommentId(comment_id),
+    checkCommentExists(comment_id),
+  ])
+    .then((result) => {
+      res.status(204).send({ comments: result[0] }); //<<should be nothing
     })
     .catch((err) => {
       next(err);
