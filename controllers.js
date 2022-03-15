@@ -116,8 +116,8 @@ exports.postComment = (req, res, next) => {
 
 exports.deleteCommentByCommentId = (req, res, next) => {
   //^^^Next; we expect errors for parametric (:) endpoints
-  const comment_id = req.params.comment_id;
-  console.log("inc");
+  const comment_id = +req.params.comment_id;
+
   Promise.all([
     fetchAndDeleteCommentByCommentId(comment_id),
     checkCommentExists(comment_id),
@@ -126,6 +126,7 @@ exports.deleteCommentByCommentId = (req, res, next) => {
       res.status(204).send({ comments: result[0] }); //<<should be nothing
     })
     .catch((err) => {
+      console.log(err);
       next(err);
     });
 };

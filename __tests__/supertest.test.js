@@ -267,123 +267,158 @@ describe("/api/articles", () => {
         });
     });
     //vvv ORDERING QUERIES default ordering (no query given) CHANGE THESE VVVVVVV
-    //     test("status: 200 - should return articles in date order ", () => {
-    //       return request(app)
-    //         .get("/api/treasures")
-    //         .expect(200)
-    //         .then((response) => {
-    //           expect(response.body.treasures[0].age).toEqual(1);
-    //         });
-    //     });
-    //     //vvv order by given query
-    //     test("status: 200 - should return all treaure sorted by cost_at_auction", () => {
-    //       return request(app)
-    //         .get("/api/treasures?sort_by=cost_at_auction")
-    //         .expect(200)
-    //         .then((response) => {
-    //           expect(response.body.treasures[0].cost_at_auction).toEqual(0.01);
-    //         });
-    //     });
-    //   });
-    // });
-
-    //vvv POST comment object to article when given ID. Responds with the posted comment
-
-    describe("POST", () => {
-      test("status: 201 - responds with comment object passed", () => {
-        const newComment = {
-          username: "rogersop",
-          body: "This is my pushed comment",
-        };
-        return request(app)
-          .post("/api/articles/12/comments")
-          .send(newComment)
-          .expect(201)
-          .then((response) => {
-            expect(response.body.comment).toEqual(
-              //no length of array because article 12 should have 0 before post
-              expect.objectContaining({
-                body: "This is my pushed comment",
-                votes: 0,
-                author: "rogersop",
-                article_id: 12,
-                created_at: expect.any(String),
-              })
-            );
+    test("status: 200 - should return articles in date order -descending(latest first?) ", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles).toBeSortedBy("date", {
+            descending: true,
           });
-      });
-      //// sad path ////
-      test("status 400 -  responds wth an error message when given invalid article id", () => {
-        const newComment = {
-          username: "rogersop",
-          body: "This is my pushed comment",
-        };
-        return request(app)
-          .post("/api/articles/banana/comments")
-          .send(newComment) //this becomes req.body
-          .expect(400)
-          .then(({ body }) => {
-            expect(body.msg).toBe("Invalid input");
+        });
+    });
+    //vvv order by given query
+    test("status: 200 - should return articles sorted by comment_count- descending", () => {
+      return request(app)
+        .get("/api/treasures?sort_by=comment_count")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles).toBeSortedBy("comment_count", {
+            descending: true,
           });
-      });
-      test("Status 404 -  valid but non existant id", () => {
-        const newComment = {
-          username: "rogersop",
-          body: "This is my pushed comment",
-        };
-        return request(app)
-          .post("/api/articles/999/comments")
-          .send(newComment) //this becomes req.body
-          .expect(404)
-          .then(({ body }) => {
-            expect(body.msg).toBe("path not found");
+        });
+    });
+    test("status: 200 - should return articles sorted by votes descending", () => {
+      return request(app)
+        .get("/api/treasures?sort_by=votes")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles).toBeSortedBy("votes", {
+            descending: true,
           });
-      });
-      test("Status 400 - invalid post request", () => {
-        const newComment = {};
-        return request(app)
-          .post("/api/articles/12/comments")
-          .send(newComment) //this becomes req.body
-          .expect(400)
-          .then(({ body }) => {
-            expect(body.msg).toBe("invalid post request");
-          }); //dont know how to get it to come here
-      });
-      test("Status 400 - invalid patch request", () => {
-        const newComment = {
-          username: "rogersop",
-          username: "This is my pushed comment",
-        };
-        return request(app)
-          .post("/api/articles/12/comments")
-          .send(newComment) //this becomes req.body
-          .expect(400)
-          .then(({ body }) => {
-            expect(body.msg).toBe("invalid post request");
-          }); //dont know how to get it to come here
-      });
+        });
+    });
+    // Ascending not descending !!!!!!!//////////
+    test("status: 200 - should return articles in date order -descending(latest first?) ", () => {
+      return request(app)
+        .get("/api/articles?order=asc")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles).toBeSortedBy("date", {
+            ascending: true,
+          });
+        });
+    });
+    //vvv order by given query
+    test("status: 200 - should return articles sorted by comment_count- descending", () => {
+      return request(app)
+        .get("/api/treasures?sort_by=comment_count&order=asc")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles).toBeSortedBy("comment_count", {
+            ascending: true,
+          });
+        });
+    });
+    test("status: 200 - should return articles sorted by votes descending", () => {
+      return request(app)
+        .get("/api/treasures?sort_by=votes&order=asc")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles).toBeSortedBy("votes", {
+            ascending: true,
+          });
+        });
     });
   });
 });
 
-//REPEAT vvv
-// describe("PATCH", () => {
-//   test("Status 200 - updates article vote count", () => {
-//     const vote = { inc_votes: 23 };
-//     return request(app)
-//       .patch("/api/articles/2")
-//       .send(vote) //this becomes req.body
-//       .expect(200)
-//       .then((response) => {
-//         expect(response.body.article.votes).toEqual(23);
-//       });
-//   });
-// });
+//vvv POST comment object to article when given ID. Responds with the posted comment
+
+describe("POST", () => {
+  test("status: 201 - responds with comment object passed", () => {
+    const newComment = {
+      username: "rogersop",
+      body: "This is my pushed comment",
+    };
+    return request(app)
+      .post("/api/articles/12/comments")
+      .send(newComment)
+      .expect(201)
+      .then((response) => {
+        expect(response.body.comment).toEqual(
+          //no length of array because article 12 should have 0 before post
+          expect.objectContaining({
+            body: "This is my pushed comment",
+            votes: 0,
+            author: "rogersop",
+            article_id: 12,
+            created_at: expect.any(String),
+          })
+        );
+      });
+  });
+  //// sad path ////
+  test("status 400 -  responds wth an error message when given invalid article id", () => {
+    const newComment = {
+      username: "rogersop",
+      body: "This is my pushed comment",
+    };
+    return request(app)
+      .post("/api/articles/banana/comments")
+      .send(newComment) //this becomes req.body
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid input");
+      });
+  });
+  test("Status 404 -  valid but non existant id", () => {
+    const newComment = {
+      username: "rogersop",
+      body: "This is my pushed comment",
+    };
+    return request(app)
+      .post("/api/articles/999/comments")
+      .send(newComment) //this becomes req.body
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("path not found");
+      });
+  });
+  test("Status 400 - invalid post request", () => {
+    const newComment = {};
+    return request(app)
+      .post("/api/articles/12/comments")
+      .send(newComment) //this becomes req.body
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("invalid post request");
+      }); //dont know how to get it to come here
+  });
+  test("Status 400 - invalid patch request", () => {
+    const newComment = {
+      username: "rogersop",
+      username: "This is my pushed comment",
+    };
+    return request(app)
+      .post("/api/articles/12/comments")
+      .send(newComment) //this becomes req.body
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("invalid post request");
+      }); //dont know how to get it to come here
+  });
+});
+
+//Sorting by topic and ordering by descending alt ascending///
+//see GET api/articles
+
+// Date comment_count vote
 
 //DELETE Comment by comment id///
-describe.only("/api/comments/:comment_id", () => {
+describe("/api/comments/:comment_id", () => {
   describe("DELETE", () => {
-    test("status(204), responds with an empty response body", () => {
+    test.only("status(204), responds with an empty response body", () => {
       return request(app).delete("/api/comments/1").expect(204);
     });
     //sad path
