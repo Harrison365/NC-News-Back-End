@@ -242,7 +242,7 @@ describe("/api/articles/:article_id/comments", () => {
 
 //vvv GET each article, including a comment count vvv ////////
 
-describe("/api/articles", () => {
+describe.only("/api/articles", () => {
   describe("GET", () => {
     test("status: 200 - responds with array of all article objects", () => {
       return request(app)
@@ -418,7 +418,7 @@ describe("POST", () => {
 //DELETE Comment by comment id///
 describe("/api/comments/:comment_id", () => {
   describe("DELETE", () => {
-    test.only("status(204), responds with an empty response body", () => {
+    test("status(204), responds with an empty response body", () => {
       return request(app).delete("/api/comments/1").expect(204);
     });
     //sad path
