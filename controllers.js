@@ -71,13 +71,25 @@ exports.getUsers = (req, res) => {
 //     });
 // };
 //vvv with vvv/////
-exports.getArticles = (req, res) => {
-  fetchArticles()
+// exports.getArticles = (req, res) => {
+//   fetchArticles()
+//     .then((result) => {
+//       res.status(200).send({ articles: result }); //<<< dont understand this destructuring.
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//     });
+// };
+///vvvv Get articles, sort by topic & order asc or desc ////
+exports.getArticles = (req, res, next) => {
+  //queries need a next//
+  const { topic, sort_by, order } = req.query;
+  fetchArticles(topic, sort_by, order)
     .then((result) => {
       res.status(200).send({ articles: result }); //<<< dont understand this destructuring.
     })
     .catch((err) => {
-      console.log(err);
+      next(err);
     });
 };
 
@@ -119,9 +131,9 @@ exports.deleteCommentByCommentId = (req, res, next) => {
   const comment_id = +req.params.comment_id;
 
   Promise.all([
-    fetchAndDeleteCommentByCommentId(comment_id),
     checkCommentExists(comment_id),
-  ])
+    fetchAndDeleteCommentByCommentId(comment_id),
+  ]) //^^^Must check before deleting////
     .then((result) => {
       res.status(204).send({ comments: result[0] }); //<<should be nothing
     })
@@ -130,16 +142,3 @@ exports.deleteCommentByCommentId = (req, res, next) => {
       next(err);
     });
 };
-
-//vvv Patch to change vote on specific article ///REPEAT!!!!
-// exports.patchVote = (req, res, next) => {
-//   const article_id = req.params.article_id;
-//   const body = req.body;
-//   voteAdder(article_id, body)
-//     .then((result) => {
-//       res.status(200).send({ article: result });
-//     })
-//     .catch((err) => {
-//       next(err);
-//     });
-// };
