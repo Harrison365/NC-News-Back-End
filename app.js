@@ -1,5 +1,6 @@
 const express = require("express");
 const {
+  getApi,
   getTopics,
   getArticleById,
   patchVote,
@@ -13,6 +14,8 @@ const {
 const app = express();
 
 app.use(express.json()); //<<< .json.parse request body and attaches to req.body
+
+app.get("/api", getApi);
 
 app.get("/api/topics", getTopics);
 

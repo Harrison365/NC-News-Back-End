@@ -96,6 +96,7 @@ exports.fetchUsers = () => {
 // };
 ///GET all articles with sorts and orders and by topic
 exports.fetchArticles = (sort_by = "created_at", order = "desc", topic) => {
+  console.log("inM");
   const possibleSortBys = [
     "article_id",
     "title",
@@ -107,19 +108,21 @@ exports.fetchArticles = (sort_by = "created_at", order = "desc", topic) => {
   ];
   const possibleOrderBys = ["desc", "asc"];
   const topicQueries = [];
-  let query = `SELECT articles.*,CAST(COUNT(comments.article_id) as INT) AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.articles_id`;
+  let queryStr = `SELECT articles.*, CAST(COUNT(comments.article_id) as INT) AS comment_count FROM articles LEFT JOIN comments ON comments.article_id = articles.articles_id`;
   if (topic) {
     topicQueries.push(topic);
-    query += `WHERE topic=$1`;
+    queryStr += ` WHERE topic=$1`;
   }
-  queryStr += `GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`;
+  queryStr += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`;
+
   if (!possibleSortBys.includes(sort_by)) {
     return Promise.reject({ status: 400, msg: "Invalid input" });
   }
   if (!possibleOrderBys.includes(order)) {
     return Promise.reject({ status: 400, msg: "Invalid input (order)" });
   }
-  return db.query(query, topicQueries).then((results) => {
+  return db.query(queryStr, topicQueries).then((results) => {
+    console.log("and here");
     return results.rows;
   });
 };

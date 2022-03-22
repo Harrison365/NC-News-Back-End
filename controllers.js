@@ -11,6 +11,11 @@ const {
   checkCommentExists,
 } = require("./models.js");
 
+//vvv GET api////
+exports.getApi = (req, res) => {
+  return res.status(200).send({ message: "all ok" });
+};
+
 //vvv Get all topics
 exports.getTopics = (req, res) => {
   fetchTopics()
@@ -83,9 +88,11 @@ exports.getUsers = (req, res) => {
 ///vvvv Get articles, sort by topic & order asc or desc ////
 exports.getArticles = (req, res, next) => {
   //queries need a next//
+  console.log("inC");
   const { topic, sort_by, order } = req.query;
   fetchArticles(topic, sort_by, order)
     .then((result) => {
+      console.log("results are in");
       res.status(200).send({ articles: result }); //<<< dont understand this destructuring.
     })
     .catch((err) => {
