@@ -13,18 +13,18 @@ afterAll(() => db.end());
 //^^^Closes connection with psql after tests.
 
 //vvv GET api////
-describe.only("/api", () => {
-  describe("GET", () => {
-    test("status-200-responds with object with message: API here", () => {
-      return request(app)
-        .get("/api")
-        .expect(200)
-        .then((response) => {
-          expect(response.body.message).toEqual("all ok");
-        });
-    });
-  });
-});
+// describe("/api", () => {
+//   describe("GET", () => {
+//     test("status-200-responds with object with message: API here", () => {
+//       return request(app)
+//         .get("/api")
+//         .expect(200)
+//         .then((response) => {
+//           expect(response.body.message).toEqual("all ok");
+//         });
+//     });
+//   });
+// });
 
 //vvv GET all topics from topic db.
 describe("/api/topics", () => {
@@ -256,137 +256,137 @@ describe("/api/articles/:article_id/comments", () => {
 
 //vvv GET each article, including a comment count vvv ////////
 
-// describe.only("/api/articles", () => {
-//   describe("GET", () => {
-//     test("status: 200 - responds with array of all article objects", () => {
-//       return request(app)
-//         .get("/api/articles")
-//         .expect(200)
-//         .then((response) => {
-//           expect(response.body.articles).toHaveLength(12);
-//           response.body.articles.forEach((article) => {
-//             expect(article).toEqual(
-//               expect.objectContaining({
-//                 article_id: expect.any(Number),
-//                 title: expect.any(String),
-//                 topic: expect.any(String),
-//                 author: expect.any(String),
-//                 body: expect.any(String),
-//                 created_at: expect.any(String),
-//                 votes: expect.any(Number),
-//                 comment_count: expect.any(String),
-//               })
-//             );
-//           });
-//         });
-//     });
-//   });
-// });
-// test("status: 200 - should return articles with the topic cats", () => {
-//   return request(app)
-//     .get("/api/articles?topic=cats")
-//     .expect(200)
-//     .then((response) => {
-//       expect(response.body.articles).toHaveLength(1);
-//       response.body.articles.forEach((article) => {
-//         expect(article).toEqual(
-//           expect.objectContaining({
-//             article_id: expect.any(Number),
-//             title: expect.any(String),
-//             topic: expect.toEqual("cats"),
-//             author: expect.any(String),
-//             body: expect.any(String),
-//             created_at: expect.any(String),
-//             votes: expect.any(Number),
-//             comment_count: expect.any(String),
-//           })
-//         );
-//       });
-//     });
-// });
-// //vvv ORDERING QUERIES default ordering (no query given) CHANGE THESE VVVVVVV
-// test("status: 200 - should return articles in date order -descending(latest first?) ", () => {
-//   return request(app)
-//     .get("/api/articles")
-//     .expect(200)
-//     .then((response) => {
-//       expect(response.body.articles).toBeSortedBy("date", {
-//         descending: true,
-//       });
-//     });
-// });
-// //vvv order by given query
-// test("status: 200 - should return articles sorted by comment_count- descending", () => {
-//   return request(app)
-//     .get("/api/articles?sort_by=comment_count")
-//     .expect(200)
-//     .then((response) => {
-//       expect(response.body.articles).toBeSortedBy("comment_count", {
-//         descending: true,
-//       });
-//     });
-// });
-// test("status: 200 - should return articles sorted by votes descending", () => {
-//   return request(app)
-//     .get("/api/articles?sort_by=votes")
-//     .expect(200)
-//     .then((response) => {
-//       expect(response.body.articles).toBeSortedBy("votes", {
-//         descending: true,
-//       });
-//     });
-// });
-//     // Ascending not descending !!!!!!!//////////
-//     test("status: 200 - should return articles in date order -descending(latest first?) ", () => {
-//       return request(app)
-//         .get("/api/articles?order=asc")
-//         .expect(200)
-//         .then((response) => {
-//           expect(response.body.articles).toBeSortedBy("date", {
-//             ascending: true,
-//           });
-//         });
-//     });
-//     //vvv order by given query
-//     test("status: 200 - should return articles sorted by comment_count- descending", () => {
-//       return request(app)
-//         .get("/api/articles?sort_by=comment_count&order=asc")
-//         .expect(200)
-//         .then((response) => {
-//           expect(response.body.articles).toBeSortedBy("comment_count", {
-//             ascending: true,
-//           });
-//         });
-//     });
-//     test("status: 200 - should return articles sorted by votes descending", () => {
-//       return request(app)
-//         .get("/api/articles?sort_by=votes&order=asc")
-//         .expect(200)
-//         .then((response) => {
-//           expect(response.body.articles).toBeSortedBy("votes", {
-//             ascending: true,
-//           });
-//         });
-//     });
-//     //sad path
-//     test("status: 400 - invalid query", () => {
-//       return request(app)
-//         .get("/api/articles?sort_by=boats")
-//         .expect(400)
-//         .then((response) => {
-//           expect(response.body.msg).toBe("Invalid input");
-//         });
-//     });
-//     test("status: 400 - invalid query", () => {
-//       return request(app)
-//         .get("/api/articles?order=boats")
-//         .expect(400)
-//         .then((response) => {
-//           expect(response.body.msg).toBe("Invalid input (order)");
-//         });
-//     });
-//   });
-// });
+describe("/api/articles", () => {
+  describe("GET", () => {
+    test("status: 200 - responds with array of all article objects", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles).toHaveLength(12);
+          response.body.articles.forEach((article) => {
+            expect(article).toEqual(
+              expect.objectContaining({
+                article_id: expect.any(Number),
+                title: expect.any(String),
+                topic: expect.any(String),
+                author: expect.any(String),
+                body: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                comment_count: expect.any(Number),
+              })
+            );
+          });
+        });
+    });
+
+    test("status: 200 - should return articles with the topic cats", () => {
+      return request(app)
+        .get("/api/articles?topic=cats")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles).toHaveLength(1);
+          expect(response.body.articles[0].topic).toBe("cats");
+          response.body.articles.forEach((article) => {
+            expect(article).toEqual(
+              expect.objectContaining({
+                article_id: expect.any(Number),
+                title: expect.any(String),
+                topic: expect.any(String),
+                author: expect.any(String),
+                body: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                comment_count: expect.any(Number),
+              })
+            );
+          });
+        });
+    });
+    //vvv ORDERING QUERIES default ordering (no query given) CHANGE THESE VVVVVVV
+    test("status: 200 - should return articles in date order -descending(latest first?) ", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles).toBeSortedBy("created_at", {
+            descending: true,
+          });
+        });
+    });
+    //vvv order by given query
+    test("status: 200 - should return articles sorted by comment_count- descending", () => {
+      return request(app)
+        .get("/api/articles?sort_by=comment_count")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles).toBeSortedBy("comment_count", {
+            descending: true,
+          });
+        });
+    });
+    test("status: 200 - should return articles sorted by votes descending", () => {
+      return request(app)
+        .get("/api/articles?sort_by=votes")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles).toBeSortedBy("votes", {
+            descending: true,
+          });
+        });
+    });
+    // Ascending not descending !!!!!!!//////////
+    test("status: 200 - should return articles in date order -descending(latest first?) ", () => {
+      return request(app)
+        .get("/api/articles?order=asc")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles).toBeSortedBy("created_at", {
+            ascending: true,
+          });
+        });
+    });
+    //vvv order by given query
+    test("status: 200 - should return articles sorted by comment_count- descending", () => {
+      return request(app)
+        .get("/api/articles?sort_by=comment_count&order=asc")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles).toBeSortedBy("comment_count", {
+            ascending: true,
+          });
+        });
+    });
+    test("status: 200 - should return articles sorted by votes descending", () => {
+      return request(app)
+        .get("/api/articles?sort_by=votes&order=asc")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles).toBeSortedBy("votes", {
+            ascending: true,
+          });
+        });
+    });
+    //sad path
+    test("status: 400 - invalid query", () => {
+      return request(app)
+        .get("/api/articles?sort_by=boats")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Invalid input");
+        });
+    });
+    test("status: 400 - invalid query", () => {
+      return request(app)
+        .get("/api/articles?order=boats")
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe("Invalid input (order)");
+        });
+    });
+  });
+});
 
 //vvv POST comment object to article when given ID. Responds with the posted comment
 
