@@ -336,8 +336,8 @@ describe("/api/articles", () => {
           });
         });
     });
-    // Ascending not descending !!!!!!!//////////
-    test("status: 200 - should return articles in date order -descending(latest first?) ", () => {
+    // Ascending not descending //////////
+    test("status: 200 - should return articles in date order -descending(oldest first) ", () => {
       return request(app)
         .get("/api/articles?order=asc")
         .expect(200)
