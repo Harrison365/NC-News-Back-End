@@ -15,13 +15,89 @@
     "exampleResponse": {
       "articles": [
         {
+          "article_id": 1,
           "title": "Seafood substitutions are increasing",
           "topic": "cooking",
           "author": "weegembump",
           "body": "Text from the article..",
+          "created_at": 1527695953341,
+          "votes": 2,
+          "comment_count": 5
+        }
+      ]
+    }
+  },
+  "GET /api/articles/:article_id": {
+    "description": "serves the article object for the specified article id",
+    "queries": [],
+    "exampleResponse": {
+      "article": {
+        "article_id": 1,
+        "title": "Seafood substitutions are increasing",
+        "topic": "cooking",
+        "author": "weegembump",
+        "body": "Text from the article..",
+        "created_at": 1527695953341,
+        "votes": 2,
+        "comment_count": 5
+      }
+    }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "allows the increase/decrese of a specified article's vote property",
+    "exampleRequest": { "inc_votes": 1 },
+    "exampleResponse": {
+      "article": {
+        "article_id": 1,
+        "title": "Seafood substitutions are increasing",
+        "topic": "cooking",
+        "author": "weegembump",
+        "body": "Text from the article..",
+        "created_at": 1527695953341,
+        "votes": 3,
+        "comment_count": 5
+      }
+    }
+  },
+  "GET /api/articles/:articles_id/comments": {
+    "description": "serves an array of comment objects for desired article",
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 10,
+          "body": "example text",
+          "votes": 0,
+          "author": "weegembump",
+          "article_id": 1,
           "created_at": 1527695953341
         }
       ]
+    }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "allows a comment to be attributed to specified article_id",
+    "exampleRequest": {
+      "username": "rogersop",
+      "body": "This is my pushed comment"
+    },
+    "exampleResponse": {
+      "comment": {
+        "body": "This is my pushed comment",
+        "votes": 0,
+        "author": "rogersop",
+        "article_id": 12,
+        "created_at": 1527695953341
+      }
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "deletes specified comment",
+    "exampleResponse": "undefined"
+  },
+  "GET /api/users": {
+    "description": "serves an array of user usernames",
+    "exampleResponse": {
+      "users": [{ "username": "rogersop" }]
     }
   }
 }

@@ -127,7 +127,10 @@ exports.fetchArticles = (sort_by = "created_at", order = "desc", topic) => {
 //vvv Get comments by article ID////////////////////////////////////////////////////
 exports.fetchCommentsById = (article_id) => {
   return db
-    .query(`SELECT * FROM comments WHERE  article_id = $1;`, [article_id])
+    .query(
+      `SELECT * FROM comments WHERE  article_id = $1 ORDER BY created_at DESC`,
+      [article_id]
+    )
     .then((result) => {
       //vvv here, we can't hard code like on line 29 as we cant assume 0 responses means that the article doesnt exist
       //It may exist but have no comments. so we need to check it exists another way...vvv
