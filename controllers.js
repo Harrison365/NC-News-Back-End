@@ -10,10 +10,11 @@ const {
   fetchAndDeleteCommentByCommentId,
   checkCommentExists,
 } = require("./models.js");
+const endpointsJson = require("./endpoints.json");
 
 //vvv GET api////
 exports.getApi = (req, res) => {
-  return res.status(200).send({ message: "all ok" });
+  return res.status(200).send(endpointsJson);
 };
 
 //vvv Get all topics

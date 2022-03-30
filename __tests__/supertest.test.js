@@ -5,6 +5,7 @@ const seed = require("../db/seeds/seed.js"); //access seed function
 const app = require("../app.js"); //access endpoints + express
 const { response } = require("express");
 const { string } = require("pg-format");
+const endpointsJson = require("../endpoints.json");
 
 beforeEach(() => seed(data));
 //^^^Reset data before every test.
@@ -13,18 +14,18 @@ afterAll(() => db.end());
 //^^^Closes connection with psql after tests.
 
 //vvv GET api////
-// describe("/api", () => {
-//   describe("GET", () => {
-//     test("status-200-responds with object with message: API here", () => {
-//       return request(app)
-//         .get("/api")
-//         .expect(200)
-//         .then((response) => {
-//           expect(response.body.message).toEqual("all ok");
-//         });
-//     });
-//   });
-// });
+describe("/api", () => {
+  describe("GET", () => {
+    test("status-200-responds with object with message: API here", () => {
+      return request(app)
+        .get("/api")
+        .expect(200)
+        .then((response) => {
+          expect(response.body).toEqual(endpointsJson);
+        });
+    });
+  });
+});
 
 //vvv GET all topics from topic db.
 describe("/api/topics", () => {
@@ -205,12 +206,15 @@ describe("/api/articles/:article_id", () => {
 
 describe("/api/articles/:article_id/comments", () => {
   describe("GET", () => {
-    test("status: 200 - responds with array of comments with specified article_id", () => {
+    test("status: 200 - responds with array of comments with specified article_id (newsest first)", () => {
       return request(app)
         .get("/api/articles/3/comments")
         .expect(200)
         .then((response) => {
           expect(response.body.comments).toHaveLength(2);
+          expect(response.body.comments).toBeSortedBy("created_at", {
+            descending: true,
+          });
           response.body.comments.forEach((comment) => {
             expect(comment).toEqual(
               expect.objectContaining({
