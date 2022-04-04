@@ -12,9 +12,8 @@ const {
   deleteCommentByCommentId,
 } = require("./controllers.js");
 
-app.use(cors());
-
 const app = express();
+app.use(cors());
 
 app.use(express.json()); //<<< .json.parse request body and attaches to req.body
 
