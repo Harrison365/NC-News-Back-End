@@ -15,7 +15,7 @@ const {
 const app = express();
 app.use(cors());
 
-app.use(express.json()); //<<< .json.parse request body and attaches to req.body
+app.use(express.json());
 
 app.get("/api", getApi);
 
@@ -34,9 +34,8 @@ app.get("/api/articles/:article_id/comments", getCommentsById);
 app.post("/api/articles/:article_id/comments", postComment);
 
 app.delete("/api/comments/:comment_id", deleteCommentByCommentId);
-// etc...
 
-// vvv Could put in seperate error file and require them in vvv
+//Errors
 app.use((err, req, res, next) => {
   if (err.status) {
     res.status(err.status).send({ msg: err.msg });
@@ -58,11 +57,8 @@ app.use((err, req, res, next) => {
   res.status(500).send({ msg: "Internal Server Error" });
 });
 
-// ^^^ Could put in seperate error file and require them in ^^^
-
 app.all("*", (req, res) => {
   res.status(404).send({ message: "path not found" });
 });
-//^^^ Default for all endpoints if the url doesn't exist
 
 module.exports = app;

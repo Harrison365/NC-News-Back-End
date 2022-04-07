@@ -1,19 +1,17 @@
 const request = require("supertest");
-const data = require("../db/data/test-data"); //auto goes to index.js
-const db = require("../db/connection.js"); //allows access to psql (connection.js)
-const seed = require("../db/seeds/seed.js"); //access seed function
-const app = require("../app.js"); //access endpoints + express
+const data = require("../db/data/test-data");
+const db = require("../db/connection.js");
+const seed = require("../db/seeds/seed.js");
+const app = require("../app.js");
 const { response } = require("express");
 const { string } = require("pg-format");
 const endpointsJson = require("../endpoints.json");
 
 beforeEach(() => seed(data));
-//^^^Reset data before every test.
 
 afterAll(() => db.end());
-//^^^Closes connection with psql after tests.
 
-//vvv GET api////
+//GET api
 describe("/api", () => {
   describe("GET", () => {
     test("status-200-responds with object with message: API here", () => {
@@ -27,7 +25,7 @@ describe("/api", () => {
   });
 });
 
-//vvv GET all topics from topic db.
+// GET all topics from topic db
 describe("/api/topics", () => {
   describe("GET", () => {
     test("status: 200 - responds with array of all topic objects", () => {
@@ -49,8 +47,7 @@ describe("/api/topics", () => {
   });
 });
 
-//vvv GET article when given article_id
-
+//GET article from article_id
 describe("/api/articles/:article_id", () => {
   describe("GET", () => {
     test("status: 200 - responds with specified article object", () => {
@@ -71,7 +68,7 @@ describe("/api/articles/:article_id", () => {
           );
         });
     });
-    //EXTRA Test for comment count vvv
+    //Test for comment count vvv
     test("status 200- article object has comment count", () => {
       return request(app)
         .get("/api/articles/3")
@@ -79,45 +76,44 @@ describe("/api/articles/:article_id", () => {
           expect(response.body.article.comment_count).toBe("2");
         });
     });
-    // Sad path vvv
+    //Sad path
     test("status 400 -  responds wth an error message when given invalid article id", () => {
       return request(app)
-        .get("/api/articles/banana") //<<< 999 would give 404 as it COULD exist as it is a number. Banana is an INVALID ID
-        .expect(400) //<<< for impossible input like banana
+        .get("/api/articles/banana")
+        .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe("Invalid input");
         });
     });
     test("Status 404 -  valid but non existant id", () => {
       return request(app)
-        .get("/api/articles/999") //<<<plausable but not existant
-        .expect(404) //<<<for plausable but not existant
+        .get("/api/articles/999")
+        .expect(404)
         .then(({ body }) => {
           expect(body.msg).toBe("ID not found");
         });
     });
   });
 
-  ///////vvv VOTE PATCH vvv////////////////
-
+  //PATCH vote
   describe("PATCH", () => {
     test("Status 200 - updates article vote count", () => {
       const vote = { inc_votes: 23 };
       return request(app)
         .patch("/api/articles/2")
-        .send(vote) //this becomes req.body
+        .send(vote)
         .expect(200)
         .then((response) => {
           expect(response.body.article.votes).toEqual(23);
         });
     });
   });
-  //// sad path ////
+  //Sad path
   test("status 400 -  responds wth an error message when given invalid article id", () => {
     const vote = { inc_votes: 23 };
     return request(app)
       .patch("/api/articles/banana")
-      .send(vote) //this becomes req.body
+      .send(vote)
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Invalid input");
@@ -127,7 +123,7 @@ describe("/api/articles/:article_id", () => {
     const vote = { inc_votes: 23 };
     return request(app)
       .patch("/api/articles/999")
-      .send(vote) //this becomes req.body
+      .send(vote)
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("ID not found");
@@ -137,24 +133,24 @@ describe("/api/articles/:article_id", () => {
     const vote = {};
     return request(app)
       .patch("/api/articles/2")
-      .send(vote) //this becomes req.body
+      .send(vote)
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("invalid patch request");
-      }); //dont know how to get it to come here
+      });
   });
   test("Status 400 - invalid patch request", () => {
     const vote = { inc_votes: 23, votes: 23 };
     return request(app)
       .patch("/api/articles/2")
-      .send(vote) //this becomes req.body
+      .send(vote)
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("invalid patch request");
-      }); //dont know how to get it to come here
+      });
   });
 
-  //vvv GET all usernames from users db.
+  //GET all usernames from users db.
   describe("/api/users", () => {
     describe("GET", () => {
       test("status: 200 - responds with array of all username keys", () => {
@@ -175,35 +171,7 @@ describe("/api/articles/:article_id", () => {
   });
 });
 
-//vvv GET all articles from articles db. (see with comment count)
-// describe("/api/articles", () => {
-//   describe("GET", () => {
-//     test("status: 200 - responds with array of all article objects", () => {
-//       return request(app)
-//         .get("/api/articles")
-//         .expect(200)
-//         .then((response) => {
-//           expect(response.body.articles).toHaveLength(12);
-//           response.body.articles.forEach((article) => {
-//             expect(article).toEqual(
-//               expect.objectContaining({
-//                 article_id: expect.any(Number),
-//                 title: expect.any(String),
-//                 topic: expect.any(String),
-//                 author: expect.any(String),
-//                 body: expect.any(String),
-//                 created_at: expect.any(String),
-//                 votes: expect.any(Number),
-//               })
-//             );
-//           });
-//         });
-//     });
-//   });
-// });
-
-//vvv GET comments when given article_id vvv///
-
+//GET comments when given article_id
 describe("/api/articles/:article_id/comments", () => {
   describe("GET", () => {
     test("status: 200 - responds with array of comments with specified article_id (newsest first)", () => {
@@ -238,19 +206,19 @@ describe("/api/articles/:article_id/comments", () => {
           expect(response.body.comments).toEqual([]);
         });
     });
-    // Sad path vvv
+    //Sad path
     test("status 400 -  responds with an error message when given invalid article id", () => {
       return request(app)
-        .get("/api/articles/banana/comments") //<<< 999 would give 404 as it COULD exist as it is a number. Banana is an INVALID ID
-        .expect(400) //<<< for impossible input like banana
+        .get("/api/articles/banana/comments")
+        .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe("Invalid input");
         });
     });
     test("Status 404 -  valid but non existant id", () => {
       return request(app)
-        .get("/api/articles/999/comments") //<<<plausable but not existant
-        .expect(404) //<<<for plausable but not existant
+        .get("/api/articles/999/comments")
+        .expect(404)
         .then(({ body }) => {
           expect(body.msg).toBe("ID not found");
         });
@@ -258,8 +226,7 @@ describe("/api/articles/:article_id/comments", () => {
   });
 });
 
-//vvv GET each article, including a comment count vvv ////////
-
+//GET each article (including comment count)
 describe("/api/articles", () => {
   describe("GET", () => {
     test("status: 200 - responds with array of all article objects", () => {
@@ -308,7 +275,7 @@ describe("/api/articles", () => {
           });
         });
     });
-    //vvv ORDERING QUERIES default ordering (no query given) CHANGE THESE VVVVVVV
+    // ORDERING QUERIES default ordering (no query given)
     test("status: 200 - should return articles in date order -descending(latest first?) ", () => {
       return request(app)
         .get("/api/articles")
@@ -319,7 +286,7 @@ describe("/api/articles", () => {
           });
         });
     });
-    //vvv order by given query
+    //ORDER BY given query
     test("status: 200 - should return articles sorted by comment_count- descending", () => {
       return request(app)
         .get("/api/articles?sort_by=comment_count")
@@ -340,7 +307,7 @@ describe("/api/articles", () => {
           });
         });
     });
-    // Ascending not descending //////////
+    // Ascending not descending
     test("status: 200 - should return articles in date order -ascending (oldest first) ", () => {
       return request(app)
         .get("/api/articles?order=asc")
@@ -351,7 +318,7 @@ describe("/api/articles", () => {
           });
         });
     });
-    //vvv order by given query
+    //ORDER BY given query
     test("status: 200 - should return articles sorted by comment_count- descending", () => {
       return request(app)
         .get("/api/articles?sort_by=comment_count&order=asc")
@@ -372,7 +339,7 @@ describe("/api/articles", () => {
           });
         });
     });
-    //sad path
+    //Sad path
     test("status: 400 - invalid query", () => {
       return request(app)
         .get("/api/articles?sort_by=boats")
@@ -392,8 +359,7 @@ describe("/api/articles", () => {
   });
 });
 
-//vvv POST comment object to article when given ID. Responds with the posted comment
-
+//POST comment object to article when given ID. Responds with the posted comment.
 describe("POST", () => {
   test("status: 201 - responds with comment object passed", () => {
     const newComment = {
@@ -406,7 +372,6 @@ describe("POST", () => {
       .expect(201)
       .then((response) => {
         expect(response.body.comment).toEqual(
-          //no length of array because article 12 should have 0 before post
           expect.objectContaining({
             body: "This is my pushed comment",
             votes: 0,
@@ -417,7 +382,7 @@ describe("POST", () => {
         );
       });
   });
-  //// sad path ////
+  //Sad path
   test("status 400 -  responds wth an error message when given invalid article id", () => {
     const newComment = {
       username: "rogersop",
@@ -425,7 +390,7 @@ describe("POST", () => {
     };
     return request(app)
       .post("/api/articles/banana/comments")
-      .send(newComment) //this becomes req.body
+      .send(newComment)
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Invalid input");
@@ -438,7 +403,7 @@ describe("POST", () => {
     };
     return request(app)
       .post("/api/articles/999/comments")
-      .send(newComment) //this becomes req.body
+      .send(newComment)
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("path not found");
@@ -448,11 +413,11 @@ describe("POST", () => {
     const newComment = {};
     return request(app)
       .post("/api/articles/12/comments")
-      .send(newComment) //this becomes req.body
+      .send(newComment)
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("invalid post request");
-      }); //dont know how to get it to come here
+      });
   });
   test("Status 400 - invalid patch request", () => {
     const newComment = {
@@ -461,26 +426,21 @@ describe("POST", () => {
     };
     return request(app)
       .post("/api/articles/12/comments")
-      .send(newComment) //this becomes req.body
+      .send(newComment)
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("invalid post request");
-      }); //dont know how to get it to come here
+      });
   });
 });
 
-//Sorting by topic and ordering by descending alt ascending///
-//see GET api/articles
-
-// Date comment_count vote
-
-//DELETE Comment by comment id///
+//DELETE comment by comment id
 describe("/api/comments/:comment_id", () => {
   describe("DELETE", () => {
     test("status(204), responds with an empty response body", () => {
       return request(app).delete("/api/comments/1").expect(204);
     });
-    //sad path
+    //Sad path
     test("status(404), responds with an error if comment_id doesnt exist", () => {
       return request(app)
         .delete("/api/comments/6000")
@@ -492,7 +452,7 @@ describe("/api/comments/:comment_id", () => {
   });
 });
 
-//vvv Global test - can apply to any endpoint. If endpoint doesn't exist -> 404.
+//Global 404 test
 describe("Error Handling", () => {
   test("should return 404 - path not found", () => {
     return request(app)
@@ -503,5 +463,3 @@ describe("Error Handling", () => {
       });
   });
 });
-
-//CAN'T TEST FOR 500 - Server Error
