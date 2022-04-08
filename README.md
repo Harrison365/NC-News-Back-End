@@ -6,24 +6,24 @@
 
 It provides article and comment information for a related front-end news website project >
 
-##Set-Up
+## Set-Up
 
 -To explore the backend code, simply create a local repository using "git clone https://github.com/Harrison365/NC-News-Back-End.git".
 
 -You will then need to create 2 new files in the root of the project, one called ".env.test" and the other ".env.development". Each file should contain the following code, respectively.
 
-```PGDATABASE=nc_news_test
-
+```javascript
+PGDATABASE = nc_news_test;
 ```
 
-```PGDATABASE=nc_news
-
+```javascript
+PGDATABASE = nc_news;
 ```
 
 -Next, install dependancies and seed the database locally using "npm i" followed by "npm run seed".
 
 -"npm t" can then be used to run the tests.
 
-##Prerequisites
+## Prerequisites
 
 -Node.js version 16.0.0 and Postgres version 14 are required for this project.
