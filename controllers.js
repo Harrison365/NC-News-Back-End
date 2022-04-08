@@ -23,9 +23,7 @@ exports.getTopics = (req, res) => {
     .then((result) => {
       res.status(200).send({ topics: result });
     })
-    .catch((err) => {
-      console.log(err);
-    });
+    .catch((err) => {});
 };
 
 //Get article by ID (with comment count)
@@ -59,9 +57,7 @@ exports.getUsers = (req, res) => {
     .then((result) => {
       res.status(200).send({ users: result });
     })
-    .catch((err) => {
-      console.log(err);
-    });
+    .catch((err) => {});
 };
 
 //Get articles, sort by topic & order asc or desc
@@ -112,7 +108,6 @@ exports.deleteCommentByCommentId = (req, res, next) => {
       res.status(204).send({ comments: result[0] });
     })
     .catch((err) => {
-      console.log(err);
       next(err);
     });
 };
