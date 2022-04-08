@@ -12,11 +12,11 @@ It provides article and comment information for a related front-end news website
 
 -You will then need to create 2 new files in the root of the project, one called ".env.test" and the other ".env.development". Each file should contain the following code, respectively.
 
-```javascript
+```
 PGDATABASE = nc_news_test;
 ```
 
-```javascript
+```
 PGDATABASE = nc_news;
 ```
 
