@@ -13,11 +13,11 @@
 - You will then need to create 2 new files in the root of the project, one called ".env.test" and the other ".env.development". Each file should contain the following code, respectively.
 
 ```
-PGDATABASE=nc_news_test;
+PGDATABASE=nc_news_test
 ```
 
 ```
-PGDATABASE=nc_news;
+PGDATABASE=nc_news
 ```
 
 - Next, install dependancies and seed the database locally using "npm i" followed by "npm run seed".
