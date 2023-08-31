@@ -28,7 +28,7 @@ PGDATABASE=nc_news
 
 - This back-end provides article and comment information for my front-end news website project > https://nc-news-front-end-hr.netlify.app/
 
-- GitHub Repo > https://github.com/Harrison365/fe-nc-news
+- GitHub Repo > https://github.com/Harrison365/NC-News-Front-End
 
 ## Prerequisites
 
