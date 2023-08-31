@@ -2,15 +2,15 @@
 
 ## Overview
 
-- Please use this link to see the complete, hosted verion of this back-end project > https://nc-news-back-end-zg12.onrender.com/
+- Please use this link to see the complete, hosted version of this back-end project > https://nc-news-back-end-zg12.onrender.com/api
 
-- This project was produced as a showcase of my back-end development skills including test-driven development, the use of Model-View-Controller (MVC) software design, SQL, error handling and more.
+- This project was produced to showcase my back-end development skills, including test-driven development, Model-View-Controller (MVC) software design, SQL, error handling and more.
 
 ## Set-Up
 
 - To explore the backend code, simply create a local repository using "git clone https://github.com/Harrison365/NC-News-Back-End.git".
 
-- You will then need to create 2 new files in the root of the project, one called ".env.test" and the other ".env.development". Each file should contain the following code, respectively.
+- You will then need to create 2 new files in the root of the project, one called ".env.test" and the other ".env.development". Each file should contain the following code, respectively:
 
 ```
 PGDATABASE=nc_news_test
@@ -20,7 +20,7 @@ PGDATABASE=nc_news_test
 PGDATABASE=nc_news
 ```
 
-- Next, install dependancies and seed the database locally using "npm i" followed by "npm run seed".
+- Next, install dependencies and seed the database locally using "npm i" followed by "npm run seed".
 
 - "npm t" can then be used to run the tests.
 
