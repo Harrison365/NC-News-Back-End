@@ -2,7 +2,7 @@
 
 ## Overview
 
-- Please use this link to see the complete, hosted verion of this back-end project > https://nc-news-be-hr.herokuapp.com/api
+- Please use this link to see the complete, hosted verion of this back-end project > https://nc-news-back-end-zg12.onrender.com/
 
 - This project was produced as a showcase of my back-end development skills including test-driven development, the use of Model-View-Controller (MVC) software design, SQL, error handling and more.
 
