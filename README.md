@@ -33,3 +33,4 @@ PGDATABASE=nc_news
 ## Prerequisites
 
 -Node.js version 16.0.0 and Postgres version 14 are required for this project.
+.
