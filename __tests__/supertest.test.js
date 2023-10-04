@@ -3,8 +3,6 @@ const data = require("../db/data/test-data");
 const db = require("../db/connection.js");
 const seed = require("../db/seeds/seed.js");
 const app = require("../app.js");
-const { response } = require("express");
-const { string } = require("pg-format");
 const endpointsJson = require("../endpoints.json");
 
 beforeEach(() => seed(data));
