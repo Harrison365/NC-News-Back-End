@@ -52,12 +52,12 @@ app.use((err, req, res, next) => {
   }
 });
 
-app.use((err, req, res, next) => {
-  res.status(500).send({ msg: "Internal Server Error" });
-});
-
 app.all("*", (req, res) => {
   res.status(404).send({ message: "path not found" });
+});
+
+app.use((err, req, res, next) => {
+  res.status(500).send({ msg: "Internal Server Error" });
 });
 
 module.exports = app;
